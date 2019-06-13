@@ -1,42 +1,38 @@
 <template>
   <div>
     <svg touch-action="none" ref="canv" width="600" height="400" viewBox="0 0 300 300">
-      <rect
-        @pointerdown="onPointerDown"
-        @pointermove="onPointerMove"
-        @pointerup="onPointerUp"
-        :x="p.x"
-        :y="p.y"
-        width="200"
-        height="100"
-        fill="#DDD"
-        stroke="black"
-      ></rect>
-      <rect
-        v-if="offset"
-        :x="p.x"
-        :y="p.y"
-        :width="offset.x"
-        :height="offset.y"
-        fill="#9C9"
-        style="pointer-events: none"
-      ></rect>
+      <g transform="scale(2,1) rotate(30,0,0) translate(10,50)">
+        <rect
+          @pointerdown="onPointerDown"
+          @pointermove="onPointerMove"
+          @pointerup="onPointerUp"
+          :x="p.x"
+          :y="p.y"
+          width="100"
+          height="100"
+          fill="#DDD"
+          stroke="black"
+        ></rect>
+        <rect
+          v-if="offset"
+          :x="p.x"
+          :y="p.y"
+          :width="offset.x"
+          :height="offset.y"
+          fill="#9C9"
+          style="pointer-events: none"
+        ></rect>
+      </g>
     </svg>
   </div>
 </template>
 
 <script>
-function screenToSvg(point, el) {
-  const pt = el.createSVGPoint();
-  //スクリーン座標を取得
+function screenToSvg(point, el, svg) {
+  const pt = svg.createSVGPoint();
   pt.x = point.x;
   pt.y = point.y;
-  const p = pt.matrixTransform(el.getScreenCTM().inverse());
-  console.log(p);
-  return {
-    x: p.x,
-    y: p.y
-  };
+  return pt.matrixTransform(el.getScreenCTM().inverse());
 }
 
 export default {
@@ -54,22 +50,23 @@ export default {
       this.offset = null;
     },
     onPointerDown(e) {
+      const svg = this.$refs.canv;
       const rect = e.target;
-      const bbox = e.target.getBoundingClientRect();
-      this.offset = {
-        x: e.clientX - bbox.left,
-        y: e.clientY - bbox.top
-      };
+      const bbox = e.target.getBBox();
+      this.offset = screenToSvg({ x: e.clientX, y: e.clientY }, rect, svg);
+      this.offset.x -= bbox.x;
+      this.offset.y -= bbox.y;
       rect.setPointerCapture(e.pointerId);
     },
     onPointerMove(e) {
       if (this.offset) {
+        const rect = e.target;
+        const bbox = e.target.getBBox();
         //SVG要素への参照を取る
         const svg = this.$refs.canv;
-        this.p = screenToSvg(
-          { x: e.clientX - this.offset.x, y: e.clientY - this.offset.y },
-          svg
-        );
+        this.p = screenToSvg({ x: e.clientX, y: e.clientY }, rect, svg);
+        this.p.x -= this.offset.x;
+        this.p.y -= this.offset.y;
       }
     }
   }
