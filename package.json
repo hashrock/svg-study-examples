@@ -1,0 +1,15 @@
+{
+  "name": "svg-study-blog",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:hashrock/svg-study-examples.git",
+  "author": "hashrock <hashrock@users.noreply.github.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.0.1"
+  },
+  "scripts": {
+    "dev": "vuepress dev",
+    "build": "vuepress build"
+  }
+}
