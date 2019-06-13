@@ -1,6 +1,6 @@
 <template>
   <div>
-    <svg touch-action="none" ref="canv" width="600" height="400">
+    <svg touch-action="none" ref="canv" width="600" height="400" viewBox="0 0 300 300">
       <rect
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
@@ -26,6 +26,19 @@
 </template>
 
 <script>
+function screenToSvg(point, el) {
+  const pt = el.createSVGPoint();
+  //スクリーン座標を取得
+  pt.x = point.x;
+  pt.y = point.y;
+  const p = pt.matrixTransform(el.getScreenCTM().inverse());
+  console.log(p);
+  return {
+    x: p.x,
+    y: p.y
+  };
+}
+
 export default {
   data() {
     return {
@@ -37,10 +50,10 @@ export default {
     };
   },
   methods: {
-    onPointerUp: function(e) {
+    onPointerUp(e) {
       this.offset = null;
     },
-    onPointerDown: function(e) {
+    onPointerDown(e) {
       const rect = e.target;
       const bbox = e.target.getBoundingClientRect();
       this.offset = {
@@ -49,15 +62,14 @@ export default {
       };
       rect.setPointerCapture(e.pointerId);
     },
-    onPointerMove: function(e) {
+    onPointerMove(e) {
       if (this.offset) {
         //SVG要素への参照を取る
         const svg = this.$refs.canv;
-        const pt = svg.createSVGPoint();
-        //スクリーン座標を取得
-        pt.x = e.clientX - this.offset.x;
-        pt.y = e.clientY - this.offset.y;
-        this.p = pt.matrixTransform(svg.getScreenCTM().inverse());
+        this.p = screenToSvg(
+          { x: e.clientX - this.offset.x, y: e.clientY - this.offset.y },
+          svg
+        );
       }
     }
   }
