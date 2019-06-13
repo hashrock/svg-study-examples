@@ -28,6 +28,9 @@
 </template>
 
 <script>
+/**
+ * clientX / Y（スクリーン座標）を element内の座標系に変換する
+ */
 function screenToSvg(point, el, svg) {
   const pt = svg.createSVGPoint();
   pt.x = point.x;
@@ -50,21 +53,27 @@ export default {
       this.offset = null;
     },
     onPointerDown(e) {
-      const svg = this.$refs.canv;
+      //Rect内のどこがクリックされたか取得
       const rect = e.target;
-      const bbox = e.target.getBBox();
-      this.offset = screenToSvg({ x: e.clientX, y: e.clientY }, rect, svg);
+      const bbox = rect.getBBox();
+      this.offset = screenToSvg(
+        { x: e.clientX, y: e.clientY },
+        rect,
+        this.$refs.canv
+      );
       this.offset.x -= bbox.x;
       this.offset.y -= bbox.y;
+      //領域外のMouseEventもキャプチャする
       rect.setPointerCapture(e.pointerId);
     },
     onPointerMove(e) {
       if (this.offset) {
-        const rect = e.target;
-        const bbox = e.target.getBBox();
-        //SVG要素への参照を取る
-        const svg = this.$refs.canv;
-        this.p = screenToSvg({ x: e.clientX, y: e.clientY }, rect, svg);
+        this.p = screenToSvg(
+          { x: e.clientX, y: e.clientY },
+          e.target,
+          this.$refs.canv
+        );
+        //Rect内の掴んだ位置分原点を移動
         this.p.x -= this.offset.x;
         this.p.y -= this.offset.y;
       }
