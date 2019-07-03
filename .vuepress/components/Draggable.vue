@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="parent">
     <svg touch-action="none" ref="canv" width="600" height="400" viewBox="0 0 300 300">
       <g transform="scale(2,1) rotate(30,0,0) translate(10,50)">
         <rect
@@ -83,4 +83,10 @@ export default {
 </script>
 
 <style>
+.child {
+  width: 200px;
+  height: 200px;
+  background: green;
+  transform: rotateY(45deg);
+}
 </style>
