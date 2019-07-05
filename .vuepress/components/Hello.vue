@@ -3,6 +3,22 @@
     <svg width="300" height="300" ref="canv" viewBox="0 0 300 300">
       <path :d="os" />
       <g v-for="item in o">
+        <line
+          :x1="item.p[0].x"
+          :y1="item.p[0].y"
+          :x2="item.p[1].x"
+          :y2="item.p[1].y"
+          stroke="black"
+        />
+        <line
+          :x1="item.p[2].x"
+          :y1="item.p[2].y"
+          :x2="item.p[3].x"
+          :y2="item.p[3].y"
+          stroke="black"
+        />
+      </g>
+      <g v-for="item in o">
         <g
           @pointerdown="onPointerDown($event, point)"
           @pointermove="onPointerMove"
@@ -10,7 +26,8 @@
           v-for="point in item.p"
           :transform="translate(point.x,point.y)"
         >
-          <circle r="5" x="0" y="0" />
+          <circle r="10" x="0" y="0" fill="rgba(0,255,0,0.0)" />
+          <circle r="5" x="0" y="0" fill="rgba(0,0,0,0.5)" />
         </g>
       </g>
     </svg>
@@ -32,10 +49,14 @@ export default {
   data() {
     return {
       o: [
-        { type: "M", p: [{ x: 200, y: 200 }] },
         {
           type: "C",
-          p: [{ x: 240, y: 200 }, { x: 210, y: 250 }, { x: 250, y: 250 }]
+          p: [
+            { x: 200, y: 200 },
+            { x: 240, y: 200 },
+            { x: 210, y: 250 },
+            { x: 250, y: 250 }
+          ]
         }
       ],
       offset: null,
@@ -77,7 +98,11 @@ export default {
     os() {
       return this.o
         .map(i => {
-          return `${i.type} ${i.p.map(ip => `${ip.x}, ${ip.y}`).join(" ")}`;
+          if (i.type === "C") {
+            return `M ${i.p[0].x},${i.p[0].y} C ${i.p[1].x},${i.p[1].y} ${i.p[2].x},${i.p[2].y} ${i.p[3].x},${i.p[3].y}`;
+          }
+
+          // return `${i.type} ${i.p.map(ip => `${ip.x}, ${ip.y}`).join(" ")}`;
         })
         .join(" ");
     }
