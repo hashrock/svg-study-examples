@@ -52,19 +52,13 @@ export default {
       this.offset = null;
     },
     onPointerDown(e, item) {
-      //Rect内のどこがクリックされたか取得
-      const rect = e.target.parentElement;
-      console.log(rect);
+      const rect = e.target;
       const bbox = rect.getBBox();
       this.offset = screenToSvg(
         { x: e.clientX, y: e.clientY },
         rect,
         this.$refs.canv
       );
-      this.offset.x -= bbox.x;
-      this.offset.y -= bbox.y;
-      console.log(this.offset);
-      //領域外のMouseEventもキャプチャする
       rect.setPointerCapture(e.pointerId);
       this.selection = item;
     },
@@ -72,16 +66,11 @@ export default {
       if (this.offset) {
         let p = screenToSvg(
           { x: e.clientX, y: e.clientY },
-          e.target,
+          this.$refs.canv,
           this.$refs.canv
         );
-        this.selection.x = p.x;
-        this.selection.y = p.y;
-
-        //Rect内の掴んだ位置分原点を移動
-        this.selection.x += 5 - this.offset.x;
-        this.selection.y += 5 - this.offset.y;
-        console.log(this.selection);
+        this.selection.x = p.x - this.offset.x;
+        this.selection.y = p.y - this.offset.y;
       }
     }
   },
