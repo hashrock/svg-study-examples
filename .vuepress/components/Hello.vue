@@ -1,7 +1,10 @@
 <template>
   <div>
     <svg width="300" height="300" ref="canv" viewBox="0 0 300 300">
-      <path :d="os" />
+      <path :d="os" id="path1" />
+      <text>
+        <textPath font-size="20" href="#path1">うねうねテキストうねうねテキスト</textPath>
+      </text>
       <g v-for="item in o">
         <line
           :x1="item.p[0].x"
