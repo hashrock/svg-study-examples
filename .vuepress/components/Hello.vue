@@ -31,7 +31,6 @@ export default {
   },
   data() {
     return {
-      d: "M 200,200 C 240,200 210,250 250,250",
       o: [
         { type: "M", p: [{ x: 200, y: 200 }] },
         {
