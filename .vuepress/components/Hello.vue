@@ -1,18 +1,30 @@
 <template>
   <div>
-    <svg width="300" height="300" viewBox="0 0 300 300">
-      <path :d="os"></path>
+    <svg width="300" height="300" ref="canv" viewBox="0 0 300 300">
+      <path :d="os" />
       <g v-for="item in o">
-        <circle
-        @pointermove=""
-        
-         v-for="point in item.p" r="5" :cx="point.x" :cy="point.y"></circle>
+        <g
+          @pointerdown="onPointerDown($event, point)"
+          @pointermove="onPointerMove"
+          @pointerup="onPointerUp"
+          v-for="point in item.p"
+          :transform="translate(point.x,point.y)"
+        >
+          <circle r="5" x="0" y="0" />
+        </g>
       </g>
     </svg>
   </div>
 </template>
 
 <script>
+function screenToSvg(point, el, svg) {
+  const pt = svg.createSVGPoint();
+  pt.x = point.x;
+  pt.y = point.y;
+  return pt.matrixTransform(el.getScreenCTM().inverse());
+}
+
 export default {
   props: {
     msg: String
@@ -26,8 +38,52 @@ export default {
           type: "C",
           p: [{ x: 240, y: 200 }, { x: 210, y: 250 }, { x: 250, y: 250 }]
         }
-      ]
+      ],
+      offset: null,
+      selection: null
     };
+  },
+  methods: {
+    translate(x, y) {
+      return `translate(${x},${y})`;
+    },
+
+    onPointerUp(e) {
+      this.offset = null;
+    },
+    onPointerDown(e, item) {
+      //Rect内のどこがクリックされたか取得
+      const rect = e.target.parentElement;
+      console.log(rect);
+      const bbox = rect.getBBox();
+      this.offset = screenToSvg(
+        { x: e.clientX, y: e.clientY },
+        rect,
+        this.$refs.canv
+      );
+      this.offset.x -= bbox.x;
+      this.offset.y -= bbox.y;
+      console.log(this.offset);
+      //領域外のMouseEventもキャプチャする
+      rect.setPointerCapture(e.pointerId);
+      this.selection = item;
+    },
+    onPointerMove(e) {
+      if (this.offset) {
+        let p = screenToSvg(
+          { x: e.clientX, y: e.clientY },
+          e.target,
+          this.$refs.canv
+        );
+        this.selection.x = p.x;
+        this.selection.y = p.y;
+
+        //Rect内の掴んだ位置分原点を移動
+        this.selection.x += 5 - this.offset.x;
+        this.selection.y += 5 - this.offset.y;
+        console.log(this.selection);
+      }
+    }
   },
   computed: {
     os() {
