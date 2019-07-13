@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        height: 100vh;
+      }
+
+      body {
+        font-family: "HG創英角ﾎﾟｯﾌﾟ体";
+        perspective: 300px;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      text {
+        stroke: black;
+      }
+
+      path {
+        fill: none;
+      }
+
+      svg {
+        transform-style: preserve-3d;
+        position: absolute;
+        animation: filter-animation 1000ms infinite;
+      }
+
+      .t1 {
+        transform: translateZ(-10px) rotateY(15deg);
+      }
+
+      .t1--shadow {
+        transform: translateZ(-10px) rotateY(15deg) rotateX(80deg);
+      }
+
+      .t2 {
+        transform: translateZ(-10px) rotateY(-25deg);
+      }
+
+      .ett {
+        font-size: 5rem;
+      }
+
+      .ett--shadow {
+        stroke: none;
+      }
+
+      @keyframes filter-animation {
+        0% {
+          filter: hue-rotate(0deg);
+        }
+
+        50% {
+          filter: hue-rotate(100deg);
+        }
+
+        100% {
+          filter: hue-rotate(0deg);
+        }
+      }
+
+      @keyframes myRotation {
+        0% {
+          transform: translateZ(-100px) rotateY(0deg) rotateX(0deg);
+        }
+        100% {
+          transform: translateZ(-100px) rotateY(360deg) rotateX(360deg);
+        }
+      }
+
+      .wrapper {
+        height: 300px;
+        width: 1000px;
+        transform-style: preserve-3d;
+        animation: myRotation 10s linear infinite;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <svg viewBox="0 0 500 200" class="t1 t1--shadow">
+        <text fill="url(#g0)" x="60" y="100" class="ett ett--shadow">
+          Chill-out
+        </text>
+      </svg>
+      <svg viewBox="0 0 500 200" class="t1">
+        <text fill="url(#g0)" x="60" y="100" class="ett">Chill-out</text>
+      </svg>
+
+      <svg viewBox="0 0 400 200" class="t2">
+        <defs>
+          <linearGradient id="g0">
+            <stop offset="0.0" stop-color="orange" />
+            <stop offset="0.2" stop-color="yellow" />
+            <stop offset="0.4" stop-color="green" />
+            <stop offset="0.6" stop-color="cyan" />
+            <stop offset="0.8" stop-color="blue" />
+            <stop offset="1" stop-color="violet" />
+          </linearGradient>
+          <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0.0" stop-color="white" />
+            <stop offset="1" stop-color="gray" />
+          </linearGradient>
+        </defs>
+        <path id="curve" d="M10 80 Q 100 10, 150 80 T 300 80" />
+        <text fill="url(#g0)">
+          <textPath alignment-baseline="top" xlink:href="#curve">
+            SVG最高！SVG最高！SVG最高！SVG最高！SVG最高！SVG最高！
+          </textPath>
+        </text>
+      </svg>
+    </div>
+
+    <script>
+      let counter = 0;
+      function d2y(cnt, offset) {
+        return Math.cos((cnt + offset) * 0.017453);
+      }
+
+      setInterval(() => {
+        counter += 2;
+
+        document
+          .querySelector("#curve")
+          .setAttribute(
+            "d",
+            `M10 ${d2y(counter, 90) * 50 + 50} Q 100 ${d2y(counter, 180) * 50 +
+              50}, 150 ${d2y(counter, 270) * 30 + 50} T 300 ${d2y(counter, 0) *
+              30 +
+              50}`
+          );
+      }, 10);
+    </script>
+  </body>
+</html>
